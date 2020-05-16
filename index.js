@@ -72,13 +72,13 @@ app.post("/api/persons", (request, response) => {
   const body = request.body
   //Name or number missing
   if (!body.name || !body.number) {
-    response.status(400).json({
+    return response.status(400).json({
       error: "Name and/or number missing"
     })
   }
   //Name aready inside
   else if (persons.map(p => p.name).includes(body.name)) {
-    response.status(400).json({
+    return response.status(400).json({
       error: "Name already exists"
     })
   }
