@@ -60,7 +60,7 @@ app.delete("/api/persons/:id", (request, response) => {
 })
 
 //add new person
-app.get("/lol", (request, response) => {
+app.post("/api/persons", (request, response) => {
   const genID = () => {
     let newID = Math.floor(Math.random()*Number.MAX_VALUE)
     while (persons.map(p => p.id).includes(newID)) {
@@ -70,7 +70,6 @@ app.get("/lol", (request, response) => {
   }
 
   const body = request.body
-
   //Name or number missing
   if (!body.name || !body.number) {
     response.status(400).json({
@@ -83,7 +82,6 @@ app.get("/lol", (request, response) => {
       error: "Name already exists"
     })
   }
-
   const newPerson = {
     name: body.name,
     number: body.number,
