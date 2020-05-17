@@ -1,7 +1,25 @@
 const express = require("express")
+const morgan = require("morgan")
 const app = express()
 
 app.use(express.json())
+
+morgan.token("postRequest", (request,response) => {
+  if (request.method == "POST") {
+    return JSON.stringify(request.body)
+  } else {
+    return ""
+  }
+})
+app.use(morgan(":method :status :res[content-length] - :response-time ms :postRequest"))
+/*
+app.use((tokens, req, res) => {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res)
+  ].join(" ")
+})*/
 
 let persons = [
   {
@@ -91,6 +109,8 @@ app.post("/api/persons", (request, response) => {
 
   response.json(newPerson)
 })
+
+
 
 const PORT = 3001
 app.listen(PORT, () => {
