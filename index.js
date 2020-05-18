@@ -18,7 +18,20 @@ morgan.token("postRequest", (request,response) => {
 })
 app.use(morgan(":method :status :res[content-length] - :response-time ms :postRequest"))
 
-let persons = []
+app.get("/info", (request, response) => {
+  const time = new Date()
+  Person
+  .find({})
+  .then(result => {
+    response.send(`
+    <p>Phonebook has info for ${result.length} people</p>
+    <p>${time}</p>
+  `)
+  })
+  .catch(error => {
+    response.status(500).end()
+  })
+})
 
 //collectionView of all persons
 app.get("/api/persons", (request, response) => {
@@ -48,7 +61,7 @@ app.get("/api/persons/:id", (request, response, next) => {
   Person
   .findById(request.params.id)
   .then(person => {
-    if (note) {
+    if (person) {
       response.json(person)
     } else {
       response.status(404).end()
@@ -95,30 +108,30 @@ app.post("/api/persons", (request, response) => {
 })
 
 //Update name or number
-/*
-app.put("api/persons/:id", (request, response, next) => {
+app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body
 
-  const person = {
+  const newPerson = {
     name: body.name,
     number: body.number
   }
 
   Person
-  .findByIdAndUpdate(request.params.id, person, { new: true })
-  .then(updatedPerson =. {
+  .findByIdAndUpdate(request.params.id, newPerson, {new: true})
+  .then(updatedPerson => {
     response.json(updatedPerson)
   })
   .catch(error => {
     next(error)
   })
 })
-*/
 
 //Not found
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
+
+app.use(unknownEndpoint)
 
 //another error
 const errorHandler = (error, request, response, next) => {
