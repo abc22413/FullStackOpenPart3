@@ -1,9 +1,13 @@
 require("dotenv").config()
+import * as Sentry from '@sentry/node';
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 const app = express()
 const Person = require("./models/person")
+
+Sentry.init({ dsn: 'https://8d8040c884ac46f8acf72f4d098ae4ef@o326454.ingest.sentry.io/5244720' });
+app.use(Sentry.Handlers.requestHandler());
 
 app.use(express.json())
 app.use(express.static("build"))
@@ -125,6 +129,14 @@ app.put("/api/persons/:id", (request, response, next) => {
     next(error)
   })
 })
+
+//Sentry debug
+app.get('/debug-sentry', function mainHandler(req, res) {
+  throw new Error('My first Sentry error!');
+});
+
+//Sentry
+app.use(Sentry.Handlers.errorHandler());
 
 //Not found
 const unknownEndpoint = (request, response) => {
