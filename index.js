@@ -1,6 +1,6 @@
 require("dotenv").config()
-import * as Sentry from '@sentry/node';
-const express = require("express")
+const express = require('express');
+const Sentry = require('@sentry/node');const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 const app = express()
