@@ -1,5 +1,4 @@
 require("dotenv").config()
-const express = require('express')
 const Sentry = require('@sentry/node')
 const express = require("express")
 const morgan = require("morgan")
