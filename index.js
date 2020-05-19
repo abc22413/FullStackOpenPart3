@@ -6,8 +6,8 @@ const cors = require("cors")
 const app = express()
 const Person = require("./models/person")
 
-Sentry.init({ dsn: 'https://8d8040c884ac46f8acf72f4d098ae4ef@o326454.ingest.sentry.io/5244720' });
-app.use(Sentry.Handlers.requestHandler());
+Sentry.init({ dsn: process.env.DSN })
+app.use(Sentry.Handlers.requestHandler())
 
 app.use(express.json())
 app.use(express.static("build"))
@@ -89,7 +89,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
 })
 
 //add new person
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   if (!request.body) {
     response.status(400).json({
       error: "Content missing"
@@ -105,8 +105,8 @@ app.post("/api/persons", (request, response) => {
     response.json(savedPerson)
   })
   .catch(error => {
-    response.status(500).json({
-      error: error
+    response.status(400).json({
+      error: error.message
     })
   })
 })
@@ -126,17 +126,19 @@ app.put("/api/persons/:id", (request, response, next) => {
     response.json(updatedPerson)
   })
   .catch(error => {
-    next(error)
+    repsonse.status(400).json({
+      error: error.message
+    })
   })
 })
 
 //Sentry debug
-app.get('/debug-sentry', function mainHandler(req, res) {
-  throw new Error('My first Sentry error!');
-});
+app.get('/debug-sentry', (request, response) => {
+  throw new Error('My first Sentry error!')
+})
 
 //Sentry
-app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.Handlers.errorHandler())
 
 //Not found
 const unknownEndpoint = (request, response) => {
@@ -151,7 +153,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
