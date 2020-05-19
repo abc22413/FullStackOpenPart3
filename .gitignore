@@ -103,3 +103,6 @@ dist
 .DS_Store
 
 requests/
+
+.eslintrc.js
+.eslintignore
